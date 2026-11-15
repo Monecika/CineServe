@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #08101f;
+  --color-navy-card: #0e1929;
+  --color-navy-elevated: #162236;
+  --color-navy-subtle: #111d2e;
+  --color-steel: #1e2f44;
+  --color-steel-subtle: #14223a;
+
+  --color-primary: #eef2f7;
+  --color-secondary: #8fa3b8;
+  --color-muted: #4b5e72;
+
+  --color-amber: #f59e0b;
+  --color-amber-light: #fbbf24;
+  --color-amber-dark: #d97706;
+  --color-amber-dim: rgba(245, 158, 11, 0.12);
+
+  --color-emerald: #10b981;
+  --color-emerald-dim: rgba(16, 185, 129, 0.12);
+
+  --color-red: #ef4444;
+  --color-red-dim: rgba(239, 68, 68, 0.12);
+
+  --color-blue: #3b82f6;
+  --color-blue-dim: rgba(59, 130, 246, 0.12);
+
+  --color-purple: #8b5cf6;
+}
+
+.active {
+  @apply bg-navy-elevated text-primary;
+}
+
+.nav-item {
+  @apply rounded-xl px-4 py-3 transition;
+}
+
+.nav-item--base {
+  @apply text-secondary hover:text-primary;
+}
+
+.nav-item--amber {
+  @apply bg-amber text-navy hover:bg-amber-light;
+}

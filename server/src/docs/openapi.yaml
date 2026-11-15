@@ -1,0 +1,544 @@
+openapi: 3.0.3
+
+info:
+  title: Cinema Reservation API
+  version: 1.0.0
+  description: Simple API for screenings, users, and seat reservations.
+
+tags:
+  - name: Auth
+  - name: Screenings
+  - name: Users
+  - name: Reservations
+  - name: Halls
+
+paths:
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Create an account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Register'
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Email is already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Log in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Incorrect password
+        '404':
+          description: User not found
+
+  /movies:
+    get:
+      tags: [Screenings]
+      summary: Get upcoming screenings
+      responses:
+        '200':
+          description: List of screenings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Movie'
+    post:
+      tags: [Screenings]
+      summary: Create a screening (admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovieInput'
+      responses:
+        '201':
+          description: Screening created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '401':
+          description: Login required
+        '403':
+          description: Admin access required
+
+  /movies/{slug}:
+    parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+        example: interstellar
+    get:
+      tags: [Screenings]
+      summary: Get one screening and its available seats
+      responses:
+        '200':
+          description: Screening details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '404':
+          description: Screening not found
+    put:
+      tags: [Screenings]
+      summary: Update a screening (admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MovieInput'
+      responses:
+        '200':
+          description: Screening updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+        '401':
+          description: Login required
+        '403':
+          description: Admin access required
+        '404':
+          description: Screening not found
+    delete:
+      tags: [Screenings]
+      summary: Delete a screening (admin)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Screening deleted
+        '401':
+          description: Login required
+        '403':
+          description: Admin access required
+        '404':
+          description: Screening not found
+
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get your account
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Your account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Login required
+    put:
+      tags: [Users]
+      summary: Update your account
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileUpdate'
+      responses:
+        '200':
+          description: Account updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
+        '401':
+          description: Login required or current password is incorrect
+
+  /users:
+    get:
+      tags: [Users]
+      summary: Get all other users (admin)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          description: Login required
+        '403':
+          description: Admin access required
+
+  /users/{id}:
+    put:
+      tags: [Users]
+      summary: Update a user's roles or status (admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAccessUpdate'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Login required
+        '403':
+          description: Admin access required
+        '404':
+          description: User not found
+
+  /reservations/me:
+    get:
+      tags: [Reservations]
+      summary: Get your reservations
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Your reservations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reservation'
+        '401':
+          description: Login required
+
+  /reservations:
+    post:
+      tags: [Reservations]
+      summary: Reserve seats
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationInput'
+      responses:
+        '201':
+          description: Reservation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '400':
+          description: Invalid reservation
+        '401':
+          description: Login required
+        '404':
+          description: Screening not found
+
+  /reservations/{id}/cancel:
+    patch:
+      tags: [Reservations]
+      summary: Cancel a reservation
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Reservation cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '400':
+          description: Reservation cannot be cancelled
+        '401':
+          description: Login required
+        '404':
+          description: Reservation not found
+
+  /halls:
+    get:
+      tags: [Halls]
+      summary: Get halls (admin)
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of halls
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Hall'
+        '401':
+          description: Login required
+        '403':
+          description: Admin access required
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Invalid input
+      required: [message]
+
+    Register:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: Alex
+        lastName:
+          type: string
+          example: Rivera
+        email:
+          type: string
+          example: alex@example.com
+        password:
+          type: string
+          example: password123
+      required: [firstName, lastName, email, password]
+
+    Login:
+      type: object
+      properties:
+        email:
+          type: string
+          example: alex@example.com
+        password:
+          type: string
+          example: password123
+      required: [email, password]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+            enum: [user, admin]
+        status:
+          type: string
+          enum: [active, inactive]
+
+    ProfileUpdate:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+      required: [firstName, lastName, email]
+
+    UserAccessUpdate:
+      type: object
+      properties:
+        roles:
+          type: array
+          items:
+            type: string
+            enum: [user, admin]
+        status:
+          type: string
+          enum: [active, inactive]
+      required: [roles, status]
+
+    MovieInput:
+      type: object
+      properties:
+        slug:
+          type: string
+          example: interstellar
+        title:
+          type: string
+          example: Interstellar
+        description:
+          type: string
+        duration:
+          type: integer
+          example: 169
+        genres:
+          type: array
+          items:
+            type: string
+          example: [Sci-Fi, Drama]
+        ageRating:
+          type: string
+          example: '12'
+        language:
+          type: string
+          example: English
+        poster:
+          type: string
+          example: https://example.com/poster.jpg
+        startsAt:
+          type: string
+          format: date-time
+          example: '2026-11-07T19:00:00'
+        hallId:
+          type: integer
+          example: 1
+      required: [slug, title, description, duration, genres, ageRating, poster, startsAt, hallId]
+
+    Movie:
+      allOf:
+        - $ref: '#/components/schemas/MovieInput'
+        - type: object
+          properties:
+            endsAt:
+              type: string
+              format: date-time
+            occupiedSeats:
+              type: array
+              items:
+                type: string
+            hall:
+              $ref: '#/components/schemas/Hall'
+
+    Hall:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        rows:
+          type: integer
+        seatsPerRow:
+          type: integer
+        totalSeats:
+          type: integer
+        availableSeats:
+          type: integer
+
+    ReservationInput:
+      type: object
+      properties:
+        movieSlug:
+          type: string
+          example: interstellar
+        seats:
+          type: array
+          items:
+            type: string
+          example: [A1, A2]
+      required: [movieSlug, seats]
+
+    Reservation:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum: [upcoming, completed, cancelled]
+        seats:
+          type: array
+          items:
+            type: string
+        movieSlug:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        movie:
+          $ref: '#/components/schemas/Movie'
