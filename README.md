@@ -1,81 +1,80 @@
-# Web Advanced Template
+# CineServe
 
-- [Introduction](./README.md#introduction)
-- [Template](./README.md#template)
-- [Assignment](./README.md#assignment)
-- [Client](./README.md#client)
-- [Server](./README.md#server)
-  - [REST specification and automated testing](./README.md#rest-specification-and-automated-testing)
-  - [Linting](./README.md#linting)
-- [Documentation](./README.md#documentation)
+CineServe is a full-stack cinema reservation app. Visitors can browse movie screenings, check seat availability, and choose seats for a show. Registered users can manage their reservations and profile, while administrators can manage screenings and user accounts.
 
+This project was built as a web development course assignment and is maintained as a portfolio project.
 
-## Introduction
+## Features
 
-Welcome to Web Advanced. Last year during Web Basics you learned about basic web techniques and languages such 
-as HTML, CSS, Javascript and REST. These techniques are the basis of web applications today. Although these applications
-can be accessed from a web browser, they tend to be a lot more dynamic than just plain old sites. Examples of these 
-kinds of applications are Gmail, Netflix, WhatsApp Web and Google Docs.
+- Browse and filter movie screenings
+- View screening details and available seats
+- Register and sign in with role-based access
+- Select seats and manage reservations
+- Update user profile details
+- Admin pages for managing screenings and users
+- REST API documented with Swagger UI
 
-The foundations for these types of applications are laid by Javascript. This programming language is built into every 
-browser. Therefore, this module will put a lot of emphasis on Javascript. We will be using it client-side (within the browser) as well as server-side (using Node.js).
+## Tech stack
 
-Though Web Basics started out as web browser applications this is no longer the case. Several frameworks have
-been developed to allow web technology to be used on mobile devices such as [React native](https://reactnative.dev/). 
-Also using [Electron](https://www.electronjs.org/) it is possible to build a desktop application. For example Twitch and Discord were built with Electron.
+- **Frontend:** Vue 3, Vue Router, Pinia, Tailwind CSS, Vite
+- **Backend:** Node.js, Express 5
+- **Database:** SQLite with Sequelize
+- **Authentication:** JSON Web Tokens
+- **API docs:** OpenAPI and Swagger UI
 
-## Template
+## Getting started
 
-This template is the basis of the backend and front-end application you have to build as the assignment for this course.
-The template contains everything you need to built both the backend and the front-end. This page explains how to use it.
-Each section below explains a root directory in the template.
+Requirements: Node.js 22.18 or newer (or 24.12+).
 
-## Assignment
+Clone the repository, then install dependencies in each app:
 
-In order to receive a passing grade you need to implement the [assignment](./assignment/README.md). The assignment 
-description can be found in the `assignment` directory. This directory contains the explanation if the assignment as 
-well as a partial functional design. The functional design contains requirements and user stories.
+```bash
+cd server
+npm install
+cp .env.example .env.dev
+npm run seed
+npm run dev
+```
 
-## Client
+In a second terminal, from the repository root:
 
-The `client` directory has to contain your client. The client has to be built using [Vue](https://vuejs.org/). The 
-base application has already been added, and you will **not** have to install it yourself. Teachers will run the 
-`npm install` and `npm start` scripts from the `package.json` file in order to start your application. If it does not
-start your entry will **not** be graded. The required scripts have already been added.
+```bash
+cd client
+npm install
+npm run dev
+```
 
-After downloading the template run `npm i` in the `client` directory to download and install the required dependencies.
+Open the frontend at <http://localhost:5173>. The API runs at <http://localhost:3000>, and its interactive documentation is at <http://localhost:3000/api-docs>.
 
-The client folder contains a `README.md` file with more details about the provided frontend template.
+The seed command resets the development database and adds sample movies, halls, users, and reservations. It is intended for local development.
 
-## Server
+## Demo accounts
 
-As stated in the course manual the backend will be created using [node.js](https://nodejs.org/). Node js is a server 
-side environment to run Javascript applications. On top of Node we will use Express 
-[expressjs.com](https://expressjs.com/). Express is a framework capable of functioning as a REST server. A default appliction with one endpoint has already been added.
+The seeded demo credentials are documented in [documentation/users.md](./documentation/users.md). They use sample passwords and are for local development only.
 
-The server folder contains a `README.md` file with more details about the provided backend template. It contains an overview with all run commands.
+## Project structure
 
-### REST specification and automated testing
-This project uses [Swagger](https://swagger.io/) for documenting the REST API. You will need to document your routes in the `server/src/docs/openapi.yaml` file. The overview of your API can be seen by visiting the page [http://localhost:3000/api-docs](http://localhost:3000/api-docs).
+```text
+client/          Vue frontend
+server/          Express API, Sequelize models, and seed data
+assignment/      Original course assignment brief
+documentation/   Project notes and demo account details
+```
 
-For testing we will use the combination of [Vitest](https://vitest.dev/) and [Supertest](https://www.npmjs.com/package/supertest). The tests will be executed when you are running the command `npm run test`.
+## Useful commands
 
-We have already provided you with an example of a API specification and a corresponding test. See `routes/example-router.js` and `tests/example.test.js`.
+Run commands from the relevant `client/` or `server/` directory.
 
-### Linting
-To help keep your code clean, consistent, and free of common errors, we use ESLint, a tool called a linter. Linting automatically checks your code for style issues and potential bugs.
+| Area | Command | Purpose |
+| --- | --- | --- |
+| Client | `npm run dev` | Start the Vite development server |
+| Client | `npm run build` | Build the frontend for production |
+| Client | `npm run lint` | Run client linters (may apply automatic fixes) |
+| Server | `npm run dev` | Start the API in development mode |
+| Server | `npm run seed` | Reset and populate the development database |
+| Server | `npm test` | Run API tests with Vitest |
+| Server | `npm run lint` | Run server linters |
 
-Why linting matters:
-- It enforces a consistent code style across the project.
-- It catches syntax errors or problematic patterns early.
-- It makes your code easier to read and maintain.
+## API
 
-You can run the linter by executing `npm run lint`. We have added linting to both the frontend and the backend.
-
-## Documentation
-
-As part of the assignment you will need to document some of your work. This documentation should be placed in the 
-`documentation` directory. Documentation must be written in 
-[Markdown](https://www.jetbrains.com/help/upsource/markdown-syntax.html). **Not** Word or PDF. Feel free to add images 
-to explain things better. Markdown has many options to create nice documentation, and it renders well on most Git 
-hosters such as Gitlab and GitHub.
+The API serves authentication, movie and screening, hall, user, and reservation endpoints. Explore the available routes and schemas through Swagger UI at `/api-docs` while the backend is running.
